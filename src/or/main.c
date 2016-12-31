@@ -3315,6 +3315,7 @@ sandbox_init_filter(void)
   OPEN_DATADIR("cached-descriptors.tmp.tmp");
   OPEN_DATADIR_SUFFIX("cached-extrainfo", ".tmp");
   OPEN_DATADIR_SUFFIX("cached-extrainfo.new", ".tmp");
+  OPEN_DATADIR_SUFFIX("unpublished-consensus", ".tmp");
   OPEN_DATADIR("cached-extrainfo.tmp.tmp");
   OPEN_DATADIR_SUFFIX("state", ".tmp");
   OPEN_DATADIR_SUFFIX("sr-state", ".tmp");

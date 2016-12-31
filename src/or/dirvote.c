@@ -3677,11 +3677,30 @@ dirvote_publish_consensus(void)
   for (i = 0; i < N_CONSENSUS_FLAVORS; ++i) {
     pending_consensus_t *pending = &pending_consensuses[i];
     const char *name;
+    char *filename;
+    char *s;
+    const unsigned int flags = NSSET_FROM_CACHE | NSSET_DONT_DOWNLOAD_CERTS;
     name = networkstatus_get_flavor_name(i);
     tor_assert(name);
     if (!pending->consensus ||
       networkstatus_check_consensus_signature(pending->consensus, 1)<0) {
-      log_warn(LD_DIR, "Not enough info to publish pending %s consensus",name);
+    char buf[128];
+    if (name == FLAV_NS) {
+      filename = get_datadir_fname("cached-consensus");
+    } else {
+      tor_snprintf(buf, sizeof(buf), "cached-%s-consensus", name);
+      filename = get_datadir_fname(buf);
+    }
+    s = read_file_to_str(filename, RFTS_IGNORE_MISSING, NULL);
+    if (s) {
+      if (networkstatus_set_current_consensus(s, name, flags, NULL) < -1) {
+        log_warn(LD_FS, "Couldn't load consensus %s networkstatus from \"%s\"",
+                 name, filename);
+      }
+      tor_free(s);
+    }
+    tor_free(filename);
+
       continue;
     }
 
